@@ -64,11 +64,15 @@ func main() {
 	app.Use(compress.New(compress.Config{Level: compress.LevelBestSpeed}))
 	app.Use(etag.New()) // ETag → 304 Not Modified untuk payload identik
 
+	// CORS: Fiber panic bila AllowOrigins="*" dipasangkan dengan AllowCredentials=true,
+	// jadi auto-nonaktifkan credentials saat wildcard digunakan.
+	corsOrigins := getEnv("CORS_ORIGINS", "http://localhost:5173")
+	allowCreds := corsOrigins != "*"
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     getEnv("CORS_ORIGINS", "http://localhost:5173"),
+		AllowOrigins:     corsOrigins,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, If-None-Match",
 		AllowMethods:     "GET, POST, HEAD, PUT, DELETE, OPTIONS",
-		AllowCredentials: true,
+		AllowCredentials: allowCreds,
 		ExposeHeaders:    "ETag",
 	}))
 
