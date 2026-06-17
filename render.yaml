@@ -1,0 +1,44 @@
+# Render Blueprint — deploy be-dashboard-mp sebagai Web Service Docker.
+# Cara pakai:
+#   1. Push repo ke GitHub.
+#   2. Di Render dashboard: New + → Blueprint → pilih repo & file ini.
+#   3. Isi env (DB_*, REDIS_URL, CORS_ORIGINS) di tab Environment service.
+#
+# Catatan: Render free tier akan auto-sleep setelah 15 menit idle.
+
+services:
+  - type: web
+    name: be-dashboard-mp
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: be-dashboard-mp
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # Render meng-inject PORT otomatis; backend sudah membaca env PORT.
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_SCHEMA
+        value: public_marts
+      - key: DB_SSLMODE
+        value: disable
+      - key: CORS_ORIGINS
+        sync: false        # isi URL Vercel, mis. https://dashboard-mp.vercel.app
+      - key: REDIS_URL
+        sync: false        # Upstash rediss://... (opsional)
+      - key: CACHE_TTL_SECONDS
+        value: "60"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_API_URL
+        value: https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent
