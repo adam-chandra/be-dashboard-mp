@@ -1,0 +1,7 @@
+# Railway Nixpacks fallback hint — kalau Railway tidak deteksi Dockerfile, file ini
+# memberi tahu bahwa root project adalah Go module. Aman dibiarkan ada bersamaan
+# dengan Dockerfile (Dockerfile akan menang karena dideklarasikan di railway.json).
+providers = ["go"]
+
+[start]
+cmd = "/app/server"
